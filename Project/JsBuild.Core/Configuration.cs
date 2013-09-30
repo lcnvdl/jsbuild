@@ -63,6 +63,7 @@ namespace JsBuild.Core
 
         string ParsePath(string path, string configDir)
         {
+#warning TEST
             string result = path.Replace("$(ConfigDir)", configDir);
 
             while (result.Contains("..\\"))
