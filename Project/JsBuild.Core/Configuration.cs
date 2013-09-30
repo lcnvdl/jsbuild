@@ -61,6 +61,21 @@ namespace JsBuild.Core
             workers = new List<IWorker>();
         }
 
+        string ParsePath(string path, string configDir)
+        {
+            string result = path.Replace("$(ConfigDir)", configDir);
+
+            while (result.Contains("..\\"))
+            {
+                int i = result.IndexOf("..\\");
+                int j = result.LastIndexOf('\\', result.LastIndexOf('\\', i)-1);
+
+                result = result.Remove(j + 1, i - j + 3);
+            }
+
+            return result;
+        }
+
         public bool Load(string path)
         {
             this.Reset();
@@ -70,6 +85,8 @@ namespace JsBuild.Core
             {
                 throw new FileNotFoundException("File not found", path);
             }
+
+            string currentDir = fi.DirectoryName;
 
             using (var sr = fi.OpenText())
             {
@@ -119,8 +136,9 @@ namespace JsBuild.Core
                                 {
                                     try
                                     {
-                                        if (System.IO.Directory.Exists(line))
-                                            this.Directory = line;
+                                        string dir = ParsePath(line, currentDir);
+                                        if (System.IO.Directory.Exists(dir))
+                                            this.Directory = dir;
                                     }
                                     catch { }
                                 }
