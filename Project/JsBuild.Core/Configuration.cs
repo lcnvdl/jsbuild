@@ -14,7 +14,6 @@ namespace JsBuild.Core
         }
 
         private string outFile;
-
         public string OutFile
         {
             get { return Path.Combine(directory, outFile); }
@@ -63,15 +62,17 @@ namespace JsBuild.Core
 
         string ParsePath(string path, string configDir)
         {
-#warning TEST
             string result = path.Replace("$(ConfigDir)", configDir);
 
             while (result.Contains("..\\"))
             {
+                // C:\Abc\Cde\(i)..\..\file.txt
                 int i = result.IndexOf("..\\");
-                int j = result.LastIndexOf('\\', result.LastIndexOf('\\', i)-1);
+                // C:\Abc(j)\Cde\(i)..\..\file.txt
+                int j = result.LastIndexOf('\\', i - 2);
 
-                result = result.Remove(j + 1, i - j + 3);
+                // C:\Abc\{Cde\..\}..\file.txt
+                result = result.Remove(j + 1, i + 3 - (j + 1));
             }
 
             return result;
