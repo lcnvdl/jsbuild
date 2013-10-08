@@ -18,6 +18,8 @@
 */obj/*
 *\obj\*
 *\bin\*
+*.FileListAbsolute.txt
+TemporaryGeneratedFile*
 
 # Packages #
 ############
