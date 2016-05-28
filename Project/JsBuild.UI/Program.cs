@@ -10,7 +10,7 @@ namespace JsBuild.UI
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.WriteLine();
             Console.WriteLine(string.Format("JsBuild v{0}", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString()));
-            Console.WriteLine("http://www.lucianorasente.com.ar");
+            Console.WriteLine("http://www.lucianorasente.com");
             Console.WriteLine();
 
             if (args.Length == 0)

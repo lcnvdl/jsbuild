@@ -35,7 +35,7 @@ namespace JsBuild.Core
                 foreach (string file in files)
                 {
                     string full = Path.Combine(this.Directory, file);
-                    if (File.Exists(full))
+                    if (File.Exists(full) || full.Contains("*"))
                         yield return full;
                 }
             }

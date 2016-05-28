@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace JsBuild.Core
@@ -14,10 +15,51 @@ namespace JsBuild.Core
             this.cfg = cfg;
         }
 
+        private List<string> GetFilesList(IEnumerable<string> files)
+        {
+            var result = new List<string>();
+
+            foreach (var file in files)
+            {
+                if (!file.Contains("*"))
+                {
+                    result.Add(file);
+                }
+                else
+                {
+                    var dir = Path.GetDirectoryName(file.Replace("*", ""));
+                    var di = new DirectoryInfo(dir);
+                    if (di.Exists)
+                    {
+                        string pattern = file.Substring(file.LastIndexOf("\\")+1);
+                        foreach (var fi in di.GetFiles(pattern, SearchOption.TopDirectoryOnly))
+                        {
+                            result.Add(fi.FullName);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
         public void Run()
         {
+            //  ============================================
+            //  Create folder if doesn't exists
+            //  ============================================
+
+            string outDir = Path.GetDirectoryName(cfg.OutFile);
+            if (!Directory.Exists(outDir))
+                Directory.CreateDirectory(outDir);
+
             using (StreamWriter sw = new StreamWriter(cfg.OutFile))
             {
+                //  ======================
+                //  Real files list
+                //  ======================
+
+                var filesList = GetFilesList(cfg.FullFiles);
 
                 //  ======================
                 //  Write Header
@@ -32,7 +74,7 @@ namespace JsBuild.Core
                     string.Format("Date: {0} ", DateTime.Today.ToShortDateString(), DateTime.Now.ToShortTimeString())
                     );
                 sw.WriteLine("Files:");
-                foreach (string file in cfg.FullFiles)
+                foreach (string file in filesList)
                 {
                     var fi = new FileInfo(file);
                     sw.Write("    ");
@@ -48,7 +90,7 @@ namespace JsBuild.Core
 
                 try
                 {
-                    foreach (string file in cfg.FullFiles)
+                    foreach (string file in filesList)
                     {
                         sw.WriteLine();
                         using (StreamReader sr = new StreamReader(file))
